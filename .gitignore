@@ -1,0 +1,11 @@
+Services/ChatBot/bot_service/.rasa/*
+Services/ChatBot/bot_service/.rasa/
+Services/ChatBot/bot_service/actions/__pycache__/*
+Services/ChatBot/bot_service/actions/__pycache__/
+Services/ChatBot/rasa_env/*
+Services/ChatBot/rasa_env/
+Services/IngestionPal/src/__pycache__/*
+*tar.gz
+*.pyc
+*.env
+Tools/keys.txt
