@@ -44,11 +44,15 @@ class ActionFetchData(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         api_name = tracker.get_slot("api_name")
-        data = db.api_responses.find_one({"api_name": api_name})
+        if not api_name:
+            dispatcher.utter_message(text="No API name provided.")
+            return []
+
+        data = db.api_responses.find_one({"api_name": str(api_name)})
 
         if data:
-            dispatcher.utter_message(text=f"Data for {api_name}: {data['response_data']}")
+            dispatcher.utter_message(text=f"Here is the data for API: {api_name} : \n {data['response_data'][0]}")
         else:
-            dispatcher.utter_message(text=f"No data found for {api_name}.")
+            dispatcher.utter_message(text=f"I couldn't data found for requested API: {api_name} you looking for.")
         return []
 

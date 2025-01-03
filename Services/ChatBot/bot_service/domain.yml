@@ -1,43 +1,35 @@
 version: "3.1"
 
 intents:
-  - greet
-  - goodbye
-  - affirm
-  - deny
-  - mood_great
-  - mood_unhappy
-  - bot_challenge
   - get_data
   - list_endpoints
+  - goodbye
+  - bot_challenge  
 
 responses:
-  utter_greet:
-  - text: "Hey! How are you?"
-
-  utter_cheer_up:
-  - text: "Here is something to cheer you up:"
-    image: "https://i.imgur.com/nGF1K8f.jpg"
-
-  utter_did_that_help:
-  - text: "Did that help you?"
-
-  utter_happy:
-  - text: "Great, carry on!"
-
   utter_goodbye:
-  - text: "Bye"
+    - text: "Goodbye!"
 
   utter_iamabot:
-  - text: "I am a bot, powered by Rasa."
+    - text: "I am a bot, powered by Rasa."
 
   utter_get_data:
     - text: "Fetching data for {api_name}..."
+    
   utter_list_endpoints:
     - text: "Here are the available endpoints: {endpoints}"
 
 actions:
-  - action_fetch_data      
+  - action_fetch_data
+  - action_train_ml_pipeline
+
+slots:
+  api_name:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_text
+        entity: api_name
 
 session_config:
   session_expiration_time: 60

@@ -1,0 +1,15 @@
+# actions/training_pipeline.py
+from rasa_sdk import Action
+from rasa_sdk.events import SlotSet
+
+class TrainMLPipeline(Action):
+    def name(self):
+        return "action_train_ml_pipeline"
+
+    def run(self, dispatcher, tracker, domain):
+        # Trigger your ML training pipeline
+        import your_ml_training_script
+        your_ml_training_script.train()
+
+        dispatcher.utter_message("The ML model has been successfully retrained.")
+        return []
