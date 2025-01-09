@@ -16,6 +16,7 @@ class Config:
     MONGODB_HOST =  os.getenv('MONGODB_HOST')
     MONGODB_PORT =  os.getenv('MONGODB_PORT')
     MONGODB_COLLECTION_NAME =  os.getenv('MONGODB_COLLECTION_NAME')
+    MONGODB_SERVICENOW_COLLECTION =  os.getenv('MONGODB_SERVICE_NOW_COLLECTION')
 
 # Optionally, check if all necessary environment variables are loaded
 if not Config.MONGODB_HOST or not Config.MONGODB_PORT or not Config.MONGODB_COLLECTION_NAME:

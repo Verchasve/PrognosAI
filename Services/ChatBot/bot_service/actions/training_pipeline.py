@@ -1,4 +1,3 @@
-# filepath: /c:/workspace/PrognosAI/Services/ChatBot/bot_service/actions/training_pipeline.py
 import json
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split

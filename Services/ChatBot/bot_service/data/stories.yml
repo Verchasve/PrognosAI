@@ -34,8 +34,8 @@ stories:
   - intent: get_data
   - action: action_fetch_data
   
-# - story: retrain ML model
-#   steps:
-#   - intent: retrain_model
-#   - action: action_train_ml_pipeline
+- story: retrain ML model
+  steps:
+  - intent: retrain_model
+  - action: action_train_ml_pipeline
 

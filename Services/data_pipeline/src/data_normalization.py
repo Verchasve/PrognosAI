@@ -17,10 +17,13 @@ def normalize_data():
         # Example normalization: Map fields to a unified schema
         normalized = []
         for item in raw_response:
+            description = item.get("description", "")
+            if not description:
+                description = "no description available fro this crypto repo"
             normalized.append({
                 "id": item.get("id", ""),
                 "name": item.get("name", ""),
-                "description": item.get("description", ""),
+                "description": description,
                 "created_at": item.get("created_at", ""),
                 "updated_at": item.get("updated_at", "")
             })
