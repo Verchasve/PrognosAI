@@ -41,8 +41,8 @@ def transform_and_predict(model, vectorizer, data):
     return predictions
 
 def main():
-    model = load_pickle_file("resolution_model.pkl")
-    vectorizer = load_pickle_file("vectorizer.pkl")
+    model = load_pickle_file("trained_model/resolution_model.pkl")
+    vectorizer = load_pickle_file("trained_model/vectorizer.pkl")
     global_logger.info("Model and vectorizer loaded successfully.")
     
     new_terms = [ "Bug", "Defect", "Feature", "Incident", "Crypto"]

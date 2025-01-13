@@ -9,3 +9,5 @@ Services/IngestionPal/src/__pycache__/*
 *.pyc
 *.env
 Tools/keys.txt
+Services/ml_model/trained_model/resolution_model.pkl
+Services/ml_model/trained_model/vectorizer.pkl

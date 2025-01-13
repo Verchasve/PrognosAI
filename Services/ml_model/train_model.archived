@@ -132,23 +132,12 @@ global_logger.info(f"True labels: {y_test}")
 
 # Print classification report with zero_division parameter
 global_logger.info(f"Classification Report: \n {classification_report(y_test, predicted_labels, zero_division=0)}")   
-
-# pipeline = Pipeline([
-#     ('vectorizer', vectorizer),
-#     ('classifier', model)
-# ])
-
-# Save the pipeline
-# with open("pipeline.pkl", "wb") as pipeline_file:
-#     pickle.dump(pipeline, pipeline_file)
  
-
-
 # Save model and vectorizer
-with open("resolution_model.pkl", "wb") as model_file:
+with open("trained_model/resolution_model.pkl", "wb") as model_file:
     pickle.dump(model, model_file)
 
-with open("vectorizer.pkl", "wb") as vectorizer_file:
+with open("trained_model/vectorizer.pkl", "wb") as vectorizer_file:
     pickle.dump(vectorizer, vectorizer_file)
 
 global_logger.info(f"Model and vectorizer saved successfully.")

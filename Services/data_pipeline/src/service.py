@@ -1,81 +1,62 @@
-import requests
-import pymongo
 from datetime import datetime , timezone
 from settings import Config
+from dateutil.parser import parse
+from mongo_client import get_mongo_client, get_database
+from global_logger import global_logger
+# MongoDB connection 
+client = get_mongo_client()
+db = get_database(client)
 
-# Use the environment variables
-print(f'Database URL: {Config.MONGODB_HOST}')
-print(f'Secret Key: {Config.MONGODB_PORT}')
+# Collections  normalized data
+normalized_data_collection = db["sanitized_data"]
+servicenow_data_collection = db["snow_ied"]
+jira_data_collection = db["jira_data"]
 
-# MongoDB Configuration
-MONGO_URI = "mongodb://"+Config.MONGODB_HOST+":"+Config.MONGODB_PORT+"/"
-DB_NAME = Config.MONGODB_COLLECTION_NAME
-client = pymongo.MongoClient(MONGO_URI)
-db = client[DB_NAME]
+# Load data from ServiceNow and JIRA collections
+service_now_data = list(servicenow_data_collection.find())
+jira_data = list(jira_data_collection.find())
 
-# # Function to fetch and store API data
-def fetch_and_store(api_name, endpoint, headers=None, params=None):
-    try:
-        response = requests.get(endpoint, headers=headers, params=params)
-        response.raise_for_status()  # Raise an exception for HTTP errors
-        data = response.json()
+# Define normalization functions
+def calculate_duration(created_at, updated_at):
+    if(created_at == None or updated_at == None):
+        return 0
+    created = parse(created_at) 
+    updated = parse(updated_at)  
+    return (updated - created).total_seconds() / 3600  # Convert to hours
 
-        # Store raw response in MongoDB
-        db.api_responses.insert_one({
-            "api_name": api_name,
-            "endpoint": endpoint,
-            "response_data": data,
-            "response_status_code": response.status_code,
-            "schema_metadata": {k: type(v).__name__ if not isinstance(v, list) else "list" for k, v in data.items()} if not isinstance(data, list) else "list",
-            "ingestion_timestamp": datetime.now(timezone.utc)
+def normalize_priority(priority):
+    priority_map = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
+    return priority_map.get(priority, 0)  # Default to 0 if priority not found
+
+
+def normalize_data(data, source):
+    normalized = []
+    for record in data:
+        normalized.append({
+            "eid": record.get("incident_id") or record.get("story_id"),
+            "short_description": record.get("short_description") or record.get("summary"),
+            "description": record.get("description", ""),
+            "priority": normalize_priority(record.get("priority", "")),
+            "type": record.get("type") or ("Incident" if source == "servicenow" else "Story"),
+            "status": record.get("state") or record.get("status"),
+            "created_at": record.get("created_at"),
+            "updated_at": record.get("updated_at"),
+            "time_to_resolve": calculate_duration(record.get("created_at"), record.get("updated_at")),
+            "category": record.get("category") or record.get("labels", ""),
+            "assignee": record.get("assigned_to") or record.get("assignee"),
+            "resolution": record.get("resolution", "No resolution provided")
         })
-        print(f"Data from {api_name} stored successfully.")
-    except Exception as e:
-        print(f"Error fetching data from {api_name}: {e}")
+    return normalized
 
-
-
-def normalize_data():
-    raw_data = db.api_responses.find()
-    for document in raw_data:
-        api_name = document["api_name"]
-        raw_response = document["response_data"]
-
-        # Example normalization: Map fields to a unified schema
-        normalized = []
-        for item in raw_response:
-            description = item.get("description", "")
-            if not description:
-                description = " User did not provide a feature description."
-            normalized.append({
-                "id": item.get("id", ""),
-                "name": item.get("name", ""),
-                "description": "There is a feature request" ,
-                "created_at": item.get("created_at", ""),
-                "updated_at": item.get("updated_at", "")
-            })
-
-        # Store normalized data
-        db.normalized_data.insert_one({
-            "api_name": api_name,
-            "unified_schema": normalized,
-            "source_id": document["_id"],
-            "preprocessing_timestamp": datetime.now(timezone.utc)
-        })
-        print(f"Normalized data stored for API: {api_name}")        
-
-  
-
+ 
 def main():
-    # Step 1: Ingest SaaS API logs
-    fetch_and_store(
-        api_name= Config.API_NAME,
-        endpoint= Config.API_URL,
-        headers={"Authorization": Config.GITHUB_AUTH_TOKEN}
-    ) 
+    # Normalize data
+    normalized_servicenow = normalize_data(service_now_data, "servicenow")
+    normalized_jira = normalize_data(jira_data, "jira")
 
-    # Step 2: Normalize the raw data 
-    normalize_data()
+    # Insert normalized data into MongoDB
+    normalized_data_collection.insert_many(normalized_servicenow + normalized_jira)
+    global_logger.info("Normalized data inserted into MongoDB.")
 
 if __name__ == "__main__":
     main()
