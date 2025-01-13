@@ -13,11 +13,11 @@ class GlobalLogger:
         if log_file:
             fh = logging.FileHandler(log_file)
             fh.setLevel(logging.DEBUG)
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(data)s')
+            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s' + (' : %(data)s' if 'data' in logging.LogRecord.__dict__ else ''))
             fh.setFormatter(formatter)
             self.logger.addHandler(fh)
         
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(data)s')
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s' + (' : %(data)s' if 'data' in logging.LogRecord.__dict__ else ''))
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
 
@@ -25,28 +25,28 @@ class GlobalLogger:
         if extra is None:
             extra = {}
         if 'data' not in extra:
-            extra['data'] = 'N/A'
+            extra['data'] = ''
         self.logger.info(message, extra=extra)
 
     def warning(self, message, extra=None):
         if extra is None:
             extra = {}
         if 'data' not in extra:
-            extra['data'] = 'N/A'
+            extra['data'] = ''
         self.logger.warning(message, extra=extra)
 
     def error(self, message, extra=None):
         if extra is None:
             extra = {}
         if 'data' not in extra:
-            extra['data'] = 'N/A'
+            extra['data'] = ''
         self.logger.error(message, extra=extra)
 
     def debug(self, message, extra=None):
         if extra is None:
             extra = {}
         if 'data' not in extra:
-            extra['data'] = 'N/A'
+            extra['data'] = ''
         self.logger.debug(message, extra=extra)
 
 # Create a global logger instance

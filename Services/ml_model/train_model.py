@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 import pickle
 import pymongo
 from global_logger import global_logger
@@ -9,6 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from collections import Counter
 from sklearn.metrics import classification_report
 from sklearn.pipeline import Pipeline
+import json
 
 # Explanation of Model Accuracy
 # Accuracy Definition:
@@ -34,14 +36,27 @@ db = client["saas_integration"]
 #  Loading script
 global_logger.info('Loading normalized data')
 
-# Load normalized data 
+# Load normalized data from the collection
 normalized_data = list(db.normalized_data.find())
 print(f"Number of documents: {len(normalized_data)}")
-#print(f"Documents: {normalized_data}")
+#global_logger.debug(f"Documents: {normalized_data}")
+
+#Load normalized data from a mock data file
+# with open('mock_normalized_data.json', 'r') as file:
+#     normalized_data = json.load(file)
+ 
+
+# global_logger.info(f"Number of documents loaded from file: {len(normalized_data)}")
+# global_logger.info(f"Documents: {normalized_data}")
+
+
+
 
 features, vectorizer = extract_features(normalized_data)
-print(f"Number of features: {len(features)}")
-print(f"Features: {features}") 
+global_logger.info(f"Number of features: {len(features)}") 
+global_logger.info(f"Features: {features}")
+
+
 
 # Generate labels for each feature
 # Generate labels for each feature
@@ -69,16 +84,18 @@ for doc in normalized_data:
                 else:
                     labels.append(0)
 
-print(f"Number of labels: {len(labels)}")
-print(f"Labels: {labels}") 
+
+global_logger.info(f"Number of labels: {len(labels)}")
+global_logger.info(f"Labels: {labels}") 
 
 # Ensure the number of labels matches the number of features
 if len(labels) != len(features):
     raise ValueError(f"Inconsistent number of samples: {len(labels)} labels, {len(features)} features")
 
 # Print label distribution
-label_distribution = Counter(labels)
-print("Label distribution:", label_distribution)
+label_distribution = Counter(labels) 
+global_logger.info(f"Label distribution:: {label_distribution}") 
+
 
 # Check if any class has fewer than 2 instances
 min_class_count = min(label_distribution.values())
@@ -88,31 +105,38 @@ if min_class_count < 2:
 # Ensure stratified split to maintain class distribution
 X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.5, random_state=42, stratify=labels)
 
-print("Training set label distribution:", Counter(y_train))
-print("Test set label distribution:", Counter(y_test))
+
+
+global_logger.info(f"Label distribution:: {label_distribution}")
+
+global_logger.info(f"Training set label distribution: {Counter(y_train)}")
+global_logger.info(f"Test set label distribution:: {Counter(y_test)}") 
 
 # Train model
-model = RandomForestClassifier()
+model = LogisticRegression()
 model.fit(X_train, y_train)
 
 # Calculate and print model accuracy
 accuracy = model.score(X_test, y_test)
-print(f"Model Accuracy: {accuracy * 100:.2f}%")
+
+global_logger.info(f"Model Accuracy: {accuracy * 100:.2f}%") 
+ 
 
 # Predict labels for the test set
 predicted_labels = model.predict(X_test)
 
 # Print predicted labels and true labels
-print("Predicted labels:", predicted_labels)
-print("True labels:", y_test)
+
+global_logger.info(f"Predicted labels: {predicted_labels}")  
+global_logger.info(f"True labels: {y_test}")  
 
 # Print classification report with zero_division parameter
-print("Classification Report: \n" ,classification_report(y_test, predicted_labels, zero_division=0))
+global_logger.info(f"Classification Report: \n {classification_report(y_test, predicted_labels, zero_division=0)}")   
 
-pipeline = Pipeline([
-    ('vectorizer', vectorizer),
-    ('classifier', model)
-])
+# pipeline = Pipeline([
+#     ('vectorizer', vectorizer),
+#     ('classifier', model)
+# ])
 
 # Save the pipeline
 # with open("pipeline.pkl", "wb") as pipeline_file:
@@ -127,4 +151,4 @@ with open("resolution_model.pkl", "wb") as model_file:
 with open("vectorizer.pkl", "wb") as vectorizer_file:
     pickle.dump(vectorizer, vectorizer_file)
 
-print("Model and vectorizer saved successfully.")
+global_logger.info(f"Model and vectorizer saved successfully.")

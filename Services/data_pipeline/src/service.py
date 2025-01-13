@@ -33,9 +33,49 @@ def fetch_and_store(api_name, endpoint, headers=None, params=None):
     except Exception as e:
         print(f"Error fetching data from {api_name}: {e}")
 
-# Example Usage
-fetch_and_store(
-    api_name= Config.API_NAME,
-    endpoint= Config.API_URL,
-    headers={"Authorization": Config.GITHUB_AUTH_TOKEN}
-)
+
+
+def normalize_data():
+    raw_data = db.api_responses.find()
+    for document in raw_data:
+        api_name = document["api_name"]
+        raw_response = document["response_data"]
+
+        # Example normalization: Map fields to a unified schema
+        normalized = []
+        for item in raw_response:
+            description = item.get("description", "")
+            if not description:
+                description = " User did not provide a feature description."
+            normalized.append({
+                "id": item.get("id", ""),
+                "name": item.get("name", ""),
+                "description": "There is a feature request" ,
+                "created_at": item.get("created_at", ""),
+                "updated_at": item.get("updated_at", "")
+            })
+
+        # Store normalized data
+        db.normalized_data.insert_one({
+            "api_name": api_name,
+            "unified_schema": normalized,
+            "source_id": document["_id"],
+            "preprocessing_timestamp": datetime.now(timezone.utc)
+        })
+        print(f"Normalized data stored for API: {api_name}")        
+
+  
+
+def main():
+    # Step 1: Ingest SaaS API logs
+    fetch_and_store(
+        api_name= Config.API_NAME,
+        endpoint= Config.API_URL,
+        headers={"Authorization": Config.GITHUB_AUTH_TOKEN}
+    ) 
+
+    # Step 2: Normalize the raw data 
+    normalize_data()
+
+if __name__ == "__main__":
+    main()
