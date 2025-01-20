@@ -90,7 +90,7 @@ def predict_and_suggest(new_ticket):
 
 # Example usage
 new_ticket = {
-    "description": "The payment gateway is not working.",
+    "description": "There is a big in the dashboard when I try to filter the data.",
     "priority": "High",
     "time_to_resolve": 48,
     "type": "Bug"

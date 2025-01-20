@@ -90,30 +90,21 @@ nlu:
 #     - am I talking to a bot?
 #     - am I talking to a human?
 
-- intent: get_data
+- intent: predict_ticket
   examples: |
-    - get data
-    - fetch data
-    - retrieve data
-    - get me the data
-    - fetch me the data
-    - retrieve me the data
-    - get the data
-    - fetch the data
-    - retrieve the data
-
-- intent: retrain_model
-  examples: |
-    - retrain model
-    - retrain the model
-    - train the model
-    - train model
-    - retrain the machine learning model
-    - train the machine learning model
-    - retrain the ml model
-    - train the ml model
-    - retrain the machine learning pipeline
-    - train the machine learning pipeline
-    - retrain the ml pipeline
-    - train the ml pipeline
-  
+    - Can you predict the status of this ticket?
+    - Find similar tickets and resolutions for this issue
+    - I need help with my account
+    - I am facing an issue with my account
+    - I am unable to login to my account
+    - I am unable to make a payment
+    - I am having issue with the dashboard
+    - I am unable to access my profile page
+    - I am facing an issue with the login feature
+    - What is the status of this incident?
+    - I need help with my payment gateway
+    - There is an issue with the dashboard
+    - The user profile page is not loading
+    - I am facing a problem with the login feature    
+    
+    

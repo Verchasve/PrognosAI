@@ -11,3 +11,4 @@ Services/IngestionPal/src/__pycache__/*
 Tools/keys.txt
 Services/ml_model/trained_model/resolution_model.pkl
 Services/ml_model/trained_model/vectorizer.pkl
+Services/ChatBot/models/*

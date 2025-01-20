@@ -1,36 +1,61 @@
 version: "3.1"
 
 intents:
-  - get_data
-  - list_endpoints
-  - goodbye
-  - bot_challenge  
+  - predict_ticket
+  - predict_resolution
+  - inform
 
-responses:
-  utter_goodbye:
-    - text: "Goodbye!"
-
-  utter_iamabot:
-    - text: "I am a bot, powered by Rasa."
-
-  utter_get_data:
-    - text: "Fetching data for {api_name}..."
-    
-  utter_list_endpoints:
-    - text: "Here are the available endpoints: {endpoints}"
-
-actions:
-  - action_fetch_data
-  - action_train_ml_pipeline
+entities:
+  - description
+  - priority
+  - time_to_resolve
+  - type
 
 slots:
-  api_name:
+  description:
     type: text
-    influence_conversation: true
     mappings:
       - type: from_text
-        entity: api_name
+  priority:
+    type: text
+    mappings:
+      - type: from_text
+  time_to_resolve:
+    type: float
+    mappings:
+      - type: from_text
+  type:
+    type: text
+    mappings:
+      - type: from_text
 
-session_config:
-  session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+actions:
+  - action_predict_ticket
+
+forms:
+  predict_ticket_form:
+    required_slots:
+      - description
+      - priority
+      - time_to_resolve
+      - type
+
+responses:
+  utter_ask_description:
+    - text: "Please provide a description of the issue."
+
+  utter_ask_priority:
+    - text: "What is the priority of this issue? Please pick one: [1 for Low, 2 for Medium, 3 for High, 4 for Critical]"
+
+  utter_ask_time_to_resolve:
+    - text: "How much time do you estimate it will take to resolve this issue?"
+
+  utter_ask_type:
+    - text: "Is this a missing feature or a bug?"
+
+  utter_slots_values:
+    - text: "I have the following information:\n
+            - description: {description}\n
+            - priority: {priority}\n
+            - time_to_resolve: {time_to_resolve}\n
+            - type: {type}"

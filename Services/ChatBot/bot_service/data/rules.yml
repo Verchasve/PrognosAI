@@ -1,17 +1,15 @@
 version: "3.1"
-
 rules:
-- rule: Say goodbye anytime the user says goodbye
-  steps:
-  - intent: goodbye
-  - action: utter_goodbye
+  - rule: Activate predict ticket form
+    steps:
+      - intent: predict_ticket
+      - action: predict_ticket_form
+      - active_loop: predict_ticket_form
 
-- rule: Say 'I am a bot' anytime the user challenges
-  steps:
-  - intent: bot_challenge
-  - action: utter_iamabot
-
-- rule: Fetch data when user asks for it
-  steps:
-  - intent: get_data
-  - action: action_fetch_data
+  - rule: Submit predict ticket form
+    condition:
+      - active_loop: predict_ticket_form
+    steps:
+      - action: predict_ticket_form
+      - active_loop: null
+      - action: action_predict_ticket
