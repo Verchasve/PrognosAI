@@ -12,3 +12,5 @@ Tools/keys.txt
 Services/ml_model/trained_model/resolution_model.pkl
 Services/ml_model/trained_model/vectorizer.pkl
 Services/ChatBot/models/*
+Services/ChatBot/bot-ui/node_modules/*
+Services/ChatBot/bot-ui/package-lock.json
