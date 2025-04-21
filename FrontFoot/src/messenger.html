@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Messenger</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    #chat-container { max-width: 500px; margin: 20px auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+    #chat-box { height: 400px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+    .message { margin: 5px 0; }
+    .user { text-align: right; color: blue; }
+    .bot { text-align: left; color: green; }
+    #input-container { display: flex; }
+    #message-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+    #send-button { padding: 10px; background-color: blue; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    #send-button:hover { background-color: darkblue; }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="chat-box"></div>
+    <div id="input-container">
+      <input type="text" id="message-input" placeholder="Type a message..." />
+      <button id="send-button">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const messageInput = document.getElementById("message-input");
+    const sendButton = document.getElementById("send-button");
+
+    const rasaEndpoint = "http://localhost:5005/webhooks/rest/webhook";
+
+    // Function to display a message in the chat box
+    function displayMessage(text, sender) {
+      const message = document.createElement("div");
+      message.className = `message ${sender}`;
+      message.innerText = text;
+      chatBox.appendChild(message);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Function to send a message to the Rasa server
+    async function sendMessage() {
+      const userMessage = messageInput.value;
+      if (!userMessage) return;
+
+      // Display user message
+      displayMessage(userMessage, "user");
+
+      // Clear the input field
+      messageInput.value = "";
+
+      try {
+        const response = await fetch(rasaEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sender: "user", message: userMessage }),
+        });
+
+        if (response.ok) {
+          const botMessages = await response.json();
+          botMessages.forEach((msg) => {
+            displayMessage(msg.text, "bot");
+          });
+        } else {
+          displayMessage("Error communicating with the bot.", "bot");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        displayMessage("Error communicating with the bot.", "bot");
+      }
+    }
+
+    // Add event listeners
+    sendButton.addEventListener("click", sendMessage);
+    messageInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>

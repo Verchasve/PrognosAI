@@ -18,6 +18,10 @@ To run in bash use `winpty rasa shell`
 Also, you can interact directly with the custom actions by making POST REST Calls. If you are running on your local server.
 Host - `http://localhost:5055/webhook`
 
+## To connect with the UI, run this command
+`rasa run --cors "*"`
+
+
 ### Results
 
 ![alt text](image.png)
