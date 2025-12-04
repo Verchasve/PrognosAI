@@ -60,7 +60,7 @@ Here’s a detailed strategy plan to build the learning model for ServiceNow and
 
 ---
 
-### **Phase 3: Prediction API and Model Serving (2-3 weeks)**
+### **Phase 3: Prediction API and Model Serving**
 
 **Goal:** Deploy the model in an API format that can be consumed by external applications or services.
 

@@ -14,3 +14,6 @@ Services/ml_model/trained_model/vectorizer.pkl
 Services/ChatBot/models/*
 Services/ChatBot/bot-ui/node_modules/*
 Services/ChatBot/bot-ui/package-lock.json
+Services/ChatBot/bot_server/node_modules/*
+Services/ChatBot/bot_server/package-lock.json
+

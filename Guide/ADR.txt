@@ -1,0 +1,19 @@
++--------------------+           +------------------+
+|   User Chat Input  |  <---->   |   Chatbot Agent  |
+| (via Web UI/API)   |           | (FastAPI or Flask)|
++--------------------+           +------------------+
+                                          |
+                      +-------------------+-------------------+
+                      |                                       |
+      +----------------------------+           +-------------------------------+
+      |   Custom ML Model (SKLearn)|           | GitHub Integration Service     |
+      +----------------------------+           +-------------------------------+
+                      |                                       |
+                      |                               1. Identify Repo/Branch
+                      |                               2. Git Checkout (via GitPython)
+                      |                               3. Diff ft. vs dev/main
+                      |                               4. Code Analysis (AST, Lint, etc.)
+                      |
+              +----------------+
+              |  Response to UI |
+              +----------------+
